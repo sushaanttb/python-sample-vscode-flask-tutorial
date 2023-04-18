@@ -50,6 +50,7 @@ stages:
       displayName: "Install requirements"
 
     - script: |
+        source antenv/bin/activate
         pip install pytest pytest-azurepipelines
         pip install pytest-cov
         pytest --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml
