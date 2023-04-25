@@ -46,6 +46,7 @@ stages:
       displayName: "Install requirements"
     
     - script: |
+        pip install pylint
         pylint app --output-format=parseable --output=pylint.log --fail-under=1
       continueOnError: false
       displayName: "Running Pylint"
