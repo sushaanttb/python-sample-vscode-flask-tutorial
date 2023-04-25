@@ -27,6 +27,8 @@ variables:
 
   artifactName: myWebApp
 
+  artifactZipName: $(artifactName)
+
 stages:
 - stage: Build
   displayName: Build stage
@@ -77,10 +79,10 @@ stages:
         rootFolderOrFile: '$(projectRoot)'
         includeRootFolder: false
         archiveType: zip
-        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/$(artifactZipName).zip
         replaceExistingArchive: true
 
-    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+    - publish: $(Build.ArtifactStagingDirectory)/$(artifactZipName).zip
       displayName: 'Publish package'
       artifact: $(artifactName)
 
@@ -108,7 +110,7 @@ stages:
             inputs:
               azureSubscription: $(azureServiceConnectionId)
               appName: $(webAppName)
-              package: $(Pipeline.Workspace)/$(artifactName)/$(Build.BuildId).zip
+              package: $(Pipeline.Workspace)/$(artifactName)/$(artifactZipName).zip
               deploymentMethod : zipDeploy
               appType : webAppLinux
               startUpCommand: 'startup.txt'
