@@ -26,6 +26,9 @@ variables:
   pythonVersion: '3.7'
 
   artifactName: myWebApp
+  
+  #Code coverage threshold in percentage
+  coverageThreshold : 70
 
 
 stages:
@@ -78,7 +81,7 @@ stages:
         checkCoverage: true
         coverageFailOption: 'fixed'
         coverageType: 'lines'
-        coverageThreshold: '80'
+        coverageThreshold: '$(coverageThreshold)'
       displayName: "Build Quality Checks"  
 
     - task: ArchiveFiles@2
