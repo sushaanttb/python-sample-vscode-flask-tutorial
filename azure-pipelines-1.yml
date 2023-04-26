@@ -110,8 +110,8 @@ stages:
               project: '1a827c5f-88ea-4ff7-bc02-182622b5685b'
               definition: '2'
               buildVersionToDownload: 'latest'
-              artifactName: $(artifactName).zip
-              targetPath: $(Build.ArtifactStagingDirectory)/$(artifactName)
+              artifactName: $(artifactName)
+              targetPath: $(Build.ArtifactStagingDirectory)/download
 
           - task: AzureWebApp@1
             displayName: 'Deploy Azure Web App : $(webAppName)'
