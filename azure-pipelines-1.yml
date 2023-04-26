@@ -27,7 +27,6 @@ variables:
 
   artifactName: myWebApp
 
-  artifactZipName: $(artifactName)
 
 stages:
 - stage: Build
@@ -79,10 +78,10 @@ stages:
         rootFolderOrFile: '$(projectRoot)'
         includeRootFolder: false
         archiveType: zip
-        archiveFile: $(Build.ArtifactStagingDirectory)/$(artifactZipName).zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/$(artifactName).zip
         replaceExistingArchive: true
 
-    - publish: $(Build.ArtifactStagingDirectory)/$(artifactZipName).zip
+    - publish: $(Pipeline.Workspace)/$(artifactName).zip
       displayName: 'Publish package'
       artifact: $(artifactName)
 
@@ -105,15 +104,21 @@ stages:
               versionSpec: '$(pythonVersion)'
             displayName: 'Use Python version'
 
-          - download: current
-            artifact: $(artifactName)
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              buildType: 'specific'
+              project: '1a827c5f-88ea-4ff7-bc02-182622b5685b'
+              definition: '2'
+              buildVersionToDownload: 'latest'
+              artifactName: $(artifactName).zip
+              targetPath: $(Pipeline.Workspace)
 
           - task: AzureWebApp@1
             displayName: 'Deploy Azure Web App : $(webAppName)'
             inputs:
               azureSubscription: $(azureServiceConnectionId)
               appName: $(webAppName)
-              package: $(Pipeline.Workspace)/_current/MyBuildArtifact/$(artifactZipName).zip
+              package: $(Pipeline.Workspace)/deploy/$(artifactName).zip
               deploymentMethod : zipDeploy
               appType : webAppLinux
               startUpCommand: 'startup.txt'
