@@ -72,18 +72,29 @@ stages:
         summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
       displayName: 'Publishing Code coverage via Cobertura' 
 
+    
+    - task: BuildQualityChecks@8
+      inputs:
+        checkCoverage: true
+        coverageFailOption: 'fixed'
+        coverageType: 'lines'
+        coverageThreshold: '80'
+      displayName: "Build Quality Checks"  
+
     - task: ArchiveFiles@2
-      displayName: 'Archive files'
       inputs:
         rootFolderOrFile: '$(projectRoot)'
         includeRootFolder: false
         archiveType: zip
         archiveFile: $(Build.ArtifactStagingDirectory)/$(artifactName).zip
         replaceExistingArchive: true
+      displayName: 'Archive files'
+
 
     - publish: $(Build.ArtifactStagingDirectory)/$(artifactName).zip
-      displayName: 'Publish package'
       artifact: $(artifactName)
+      displayName: 'Publishing package'
+
 
 - stage: Deploy
   displayName: 'Deploy Web App'
