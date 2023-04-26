@@ -81,7 +81,7 @@ stages:
         archiveFile: $(Build.ArtifactStagingDirectory)/$(artifactName).zip
         replaceExistingArchive: true
 
-    - publish: $(Pipeline.Workspace)/$(artifactName).zip
+    - publish: $(Build.ArtifactStagingDirectory)/$(artifactName).zip
       displayName: 'Publish package'
       artifact: $(artifactName)
 
@@ -118,7 +118,7 @@ stages:
             inputs:
               azureSubscription: $(azureServiceConnectionId)
               appName: $(webAppName)
-              package: $(Pipeline.Workspace)/deploy/$(artifactName).zip
+              package: $(Pipeline.Workspace)/$(artifactName).zip
               deploymentMethod : zipDeploy
               appType : webAppLinux
               startUpCommand: 'startup.txt'
