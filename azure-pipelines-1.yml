@@ -106,7 +106,7 @@ stages:
             displayName: 'Use Python version'
 
           - download: current
-            artifact: $(Build.ArtifactStagingDirectory)/$(artifactZipName).zip
+            artifact: $(artifactName)
 
           - task: AzureWebApp@1
             displayName: 'Deploy Azure Web App : $(webAppName)'
