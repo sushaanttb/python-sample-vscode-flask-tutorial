@@ -111,14 +111,14 @@ stages:
               definition: '2'
               buildVersionToDownload: 'latest'
               artifactName: $(artifactName)
-              targetPath: $(Build.ArtifactStagingDirectory)/download
+              targetPath: $(Build.ArtifactStagingDirectory)/deploy
 
           - task: AzureWebApp@1
             displayName: 'Deploy Azure Web App : $(webAppName)'
             inputs:
               azureSubscription: $(azureServiceConnectionId)
               appName: $(webAppName)
-              package: $(Build.ArtifactStagingDirectory)/$(artifactName)/$(artifactName).zip
+              package: $(Build.ArtifactStagingDirectory)/deploy/$(artifactName)/$(artifactName).zip
               deploymentMethod : zipDeploy
               appType : webAppLinux
               startUpCommand: 'startup.txt'
