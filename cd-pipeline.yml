@@ -1,0 +1,61 @@
+trigger: none
+
+variables:
+ # Azure Resource Manager connection created during pipeline creation
+  azureServiceConnectionId: 'f0372df8-cd85-479c-a4b0-ef7253d9acef'
+
+  # Web app name
+  webAppName: 'myPythonAppService1704'
+
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+  # Environment name
+  environmentName: $(webAppName)
+
+  # Project root folder. Point to the folder containing manage.py file.
+  projectRoot: $(System.DefaultWorkingDirectory)
+
+  # Python version: 3.7
+  pythonVersion: '3.7'
+
+  artifactName: myWebApp
+  
+stages:
+- stage: Deploy
+  displayName: 'Deploy Web App'
+  dependsOn: Build
+  condition: eq(variables['Build.Reason'], 'Manual')
+  jobs:
+  - deployment: DeploymentJob
+    pool:
+      vmImage: $(vmImageName)
+    environment: $(environmentName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '$(pythonVersion)'
+            displayName: 'Use Python version'
+
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              buildType: 'specific'
+              project: '1a827c5f-88ea-4ff7-bc02-182622b5685b'
+              definition: '2'
+              buildVersionToDownload: 'latest'
+              artifactName: $(artifactName)
+              targetPath: $(Build.ArtifactStagingDirectory)/deploy
+
+          - task: AzureWebApp@1
+            displayName: 'Deploy Azure Web App : $(webAppName)'
+            inputs:
+              azureSubscription: $(azureServiceConnectionId)
+              appName: $(webAppName)
+              package: $(Build.ArtifactStagingDirectory)/deploy/$(artifactName).zip
+              deploymentMethod : zipDeploy
+              appType : webAppLinux
+              startUpCommand: 'startup.txt'
