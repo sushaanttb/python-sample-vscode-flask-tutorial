@@ -21,12 +21,8 @@ variables:
 
   artifactName: myWebApp
   
-stages:
-- stage: Deploy
-  displayName: 'Deploy Web App'
-  dependsOn: Build
-  condition: eq(variables['Build.Reason'], 'Manual')
-  jobs:
+
+jobs:
   - deployment: DeploymentJob
     pool:
       vmImage: $(vmImageName)
