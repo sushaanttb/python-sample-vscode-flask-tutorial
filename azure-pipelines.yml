@@ -1,36 +1,97 @@
-# Python package
-# Create and test a Python package on multiple Python versions.
-# Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
+# Python to Linux Web App on Azure
+# Build your Python project and deploy it to Azure as a Linux Web App.
+# Change python version to one thats appropriate for your application.
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
 trigger:
 - main
 
-pool:
-  vmImage: ubuntu-latest
-strategy:
-  matrix:
-    Python27:
-      python.version: '2.7'
-    Python35:
-      python.version: '3.5'
-    Python36:
-      python.version: '3.6'
-    Python37:
-      python.version: '3.7'
+variables:
 
-steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '$(python.version)'
-  displayName: 'Use Python $(python.version)'
+  # Web app name
+  webAppName: 'myPythonAppService1704'
 
-- script: |
-    python -m pip install --upgrade pip
-    pip install -r requirements.txt
-  displayName: 'Install dependencies'
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
 
-- script: |
-    pip install pytest pytest-azurepipelines
-    pytest
-  displayName: 'pytest'
+  # Environment name
+  environmentName: dev
+
+  # Project root folder. Point to the folder containing manage.py file.
+  projectRoot: $(System.DefaultWorkingDirectory)
+
+  # Python version: 3.7
+  pythonVersion: '3.7'
+
+  artifactName: myWebApp
+  
+  #Code coverage threshold in percentage
+  coverageThreshold : 70
+
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:
+  - job: BuildJob
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '$(pythonVersion)'
+      displayName: 'Use Python $(pythonVersion)'
+
+    - script: |
+        pip install -r requirements.txt
+      workingDirectory: $(projectRoot)
+      displayName: "Install requirements"
+    
+    - script: |
+        pip install pylint
+        pylint hello_app --output-format=parseable --output=pylint.log --fail-under=1
+      continueOnError: false
+      displayName: "Running Pylint"
+
+    - script: |
+        pip install pytest-azurepipelines
+        pip install pytest-cov
+        pytest --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml
+      displayName: 'Test with pytest'
+ 
+
+    - task: PublishTestResults@2
+      condition: succeededOrFailed()
+      inputs:
+        testResultsFiles: '**/test-*.xml'
+        testRunTitle: 'Publish test results for $(webAppName)'
+      displayName: 'Publishing Test results for $(webAppName)' 
+
+    - task: PublishCodeCoverageResults@1
+      inputs:
+        codeCoverageTool: Cobertura
+        summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
+      displayName: 'Publishing Code coverage via Cobertura' 
+
+    
+    - task: BuildQualityChecks@8
+      inputs:
+        checkCoverage: true
+        coverageFailOption: 'fixed'
+        coverageType: 'lines'
+        coverageThreshold: '$(coverageThreshold)'
+      displayName: "Build Quality Checks"  
+
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(projectRoot)'
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/$(artifactName).zip
+        replaceExistingArchive: true
+      displayName: 'Archive files'
+
+
+    - publish: $(Build.ArtifactStagingDirectory)/$(artifactName).zip
+      artifact: $(artifactName)
+      displayName: 'Publishing package'
