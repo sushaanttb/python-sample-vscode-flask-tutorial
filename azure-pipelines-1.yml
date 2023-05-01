@@ -3,7 +3,8 @@
 # Change python version to one thats appropriate for your application.
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
-trigger: none
+trigger: 
+  - master
 
 variables:
   # Azure Resource Manager connection created during pipeline creation
@@ -16,7 +17,7 @@ variables:
   vmImageName: 'ubuntu-latest'
 
   # Environment name
-  environmentName: $(webAppName)
+  environmentName: Dev
 
   # Project root folder. Point to the folder containing manage.py file.
   projectRoot: $(System.DefaultWorkingDirectory)
@@ -29,6 +30,11 @@ variables:
   #Code coverage threshold in percentage
   coverageThreshold : 70
 
+  #Is this run from Master Branch?
+  isMaster: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
+
+  #Is this run from PR?
+  isPR : $[eq(variables['Build.Reason'], 'PullRequest')]
 
 stages:
 - stage: Build
@@ -100,8 +106,9 @@ stages:
 
 - stage: Deploy
   displayName: 'Deploy Web App'
-  dependsOn: Build
-  condition: eq(variables['Build.Reason'], 'Manual')
+  dependsOn: BuildJob
+  # condition: eq(variables['Build.Reason'], 'Manual')
+  condition: and(succeeded(), eq(variables.isMaster, true) , eq(variables.isPR, false))
   jobs:
   - deployment: DeploymentJob
     pool:
@@ -123,8 +130,8 @@ stages:
               project: '1a827c5f-88ea-4ff7-bc02-182622b5685b'
               definition: '2'
               buildVersionToDownload: 'latest'
-              artifactName: $(artifactName)
-              targetPath: $(Build.ArtifactStagingDirectory)/deploy
+              artifactName: '$(artifactName)'
+              targetPath: '$(Build.ArtifactStagingDirectory)/deploy'
 
           - task: AzureWebApp@1
             displayName: 'Deploy Azure Web App : $(webAppName)'
