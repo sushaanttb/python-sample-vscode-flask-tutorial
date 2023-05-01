@@ -1,8 +1,8 @@
 resources:
   pipelines:
-    - pipeline: azure-pipelines
+    - pipeline: CIpipeline
       project: test_CICD
-      source: azure-pipelines
+      source: CI pipeline
       trigger: 
         branches:
           include:
