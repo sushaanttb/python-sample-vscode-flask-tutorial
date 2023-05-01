@@ -106,7 +106,7 @@ stages:
 
 - stage: Deploy
   displayName: 'Deploy Web App'
-  dependsOn: BuildJob
+  dependsOn: Build
   # condition: eq(variables['Build.Reason'], 'Manual')
   condition: and(succeeded(), eq(variables.isMain, true) , eq(variables.isPR, false))
   jobs:
