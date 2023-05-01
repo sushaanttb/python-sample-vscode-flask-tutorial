@@ -12,6 +12,7 @@ trigger:
       - README.md
       - '*.yml'
 
+
 variables:
 
   # Web app name
