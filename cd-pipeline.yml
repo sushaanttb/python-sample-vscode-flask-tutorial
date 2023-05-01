@@ -1,6 +1,6 @@
 resources:
   pipelines:
-    - pipeline: BuildPipeline
+    - pipeline: azure-pipelines
       project: test_CICD
       source: azure-pipelines
       trigger: 
