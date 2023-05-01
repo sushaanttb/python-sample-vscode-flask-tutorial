@@ -3,7 +3,8 @@
 # Change python version to one thats appropriate for your application.
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
-trigger: none
+trigger: 
+  - main
 
 variables:
 
