@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
 trigger: 
-  - master
+  - main
 
 variables:
   # Azure Resource Manager connection created during pipeline creation
@@ -30,8 +30,8 @@ variables:
   #Code coverage threshold in percentage
   coverageThreshold : 70
 
-  #Is this run from Master Branch?
-  isMaster: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
+  #Is this run from Main Branch?
+  isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
 
   #Is this run from PR?
   isPR : $[eq(variables['Build.Reason'], 'PullRequest')]
@@ -108,7 +108,7 @@ stages:
   displayName: 'Deploy Web App'
   dependsOn: BuildJob
   # condition: eq(variables['Build.Reason'], 'Manual')
-  condition: and(succeeded(), eq(variables.isMaster, true) , eq(variables.isPR, false))
+  condition: and(succeeded(), eq(variables.isMain, true) , eq(variables.isPR, false))
   jobs:
   - deployment: DeploymentJob
     pool:
