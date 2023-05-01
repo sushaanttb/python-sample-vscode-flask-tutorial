@@ -1,5 +1,13 @@
-trigger: none
-
+resources:
+  pipelines:
+    - pipeline: BuildPipeline
+      project: test_CICD
+      source: azure-pipelines
+      trigger: 
+        branches:
+          include:
+            - master
+       
 variables:
  # Azure Resource Manager connection created during pipeline creation
   azureServiceConnectionId: 'f0372df8-cd85-479c-a4b0-ef7253d9acef'
@@ -24,8 +32,6 @@ variables:
 
 jobs:
   - deployment: DeploymentJob
-    dependsOn: BuildJob
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'master'))
     pool:
       vmImage: $(vmImageName)
     environment: $(environmentName)
