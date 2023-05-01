@@ -1,14 +1,14 @@
 trigger: none
 
-# resources:
-#   pipelines:
-#     - pipeline: CIpipeline
-#       project: test_CICD
-#       source: CI pipeline
-#       trigger: 
-#         branches:
-#           include:
-#             - master
+resources:
+  pipelines:
+    - pipeline: CIpipeline
+      project: test_CICD
+      source: CI pipeline
+      trigger: 
+        branches:
+          include:
+            - master
        
 variables:
  # Azure Resource Manager connection created during pipeline creation
