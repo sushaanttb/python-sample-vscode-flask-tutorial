@@ -63,7 +63,7 @@ stages:
     - script: |
         pip install pytest-azurepipelines
         pip install pytest-cov
-        pytest --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml
+        pytest --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml --cov-fail-under= $(coverageThreshold)
       displayName: 'Test with pytest'
  
 
@@ -81,13 +81,13 @@ stages:
       displayName: 'Publishing Code coverage via Cobertura' 
 
     
-    - task: BuildQualityChecks@8
-      inputs:
-        checkCoverage: true
-        coverageFailOption: 'fixed'
-        coverageType: 'lines'
-        coverageThreshold: '$(coverageThreshold)'
-      displayName: "Build Quality Checks"  
+    # - task: BuildQualityChecks@8
+    #   inputs:
+    #     checkCoverage: true
+    #     coverageFailOption: 'fixed'
+    #     coverageType: 'lines'
+    #     coverageThreshold: '$(coverageThreshold)'
+    #   displayName: "Build Quality Checks"  
 
     - task: ArchiveFiles@2
       inputs:
