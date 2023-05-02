@@ -63,7 +63,8 @@ stages:
     - script: |
         pip install pytest-azurepipelines
         pip install pytest-cov
-        pytest --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml --cov-fail-under= $(coverageThreshold)
+        pytest --doctest-modules --junitxml=junit/test-results.xml --cov=. --cov-report=xml --cov-fail-under=90
+      continueOnError: false
       displayName: 'Test with pytest'
  
 
