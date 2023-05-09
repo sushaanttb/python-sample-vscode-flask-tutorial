@@ -26,3 +26,14 @@ def hello_there(name = None):
 @app.route("/api/data")
 def get_data():
     return app.send_static_file("data.json")
+
+
+@app.route("/get", methods=["GET"])
+def hello():
+    return {"message": "Hello!"}
+
+@app.route("/webhook", methods=["POST"])
+def handle_notification():
+    payload = request.get_json()
+    print(payload)
+    return {"message": "Webhook received successfully"}
